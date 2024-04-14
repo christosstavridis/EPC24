@@ -1,0 +1,39 @@
+float angle_limit = chf("angle_limit");
+
+vector target_pos, target_vec, check_pos, check_vec;
+float target_len, check_len, check_angle;
+int mark;
+
+i[]@firstpass;
+
+for (int i = 0; i < @numpt; i++) {
+    if (i == @ptnum) continue;
+    
+    mark = 0;
+    
+    target_pos = point(0, "P", i);
+    target_vec = target_pos - @P;
+    target_len = length(target_vec);
+
+    for (int j = 0; j < @numpt; j++) {
+        if (j == @ptnum || j == i) continue;
+
+        check_pos = point(0, "P", j);
+        check_vec = check_pos - @P;
+        check_len = length(check_vec);
+
+        if (target_len > check_len) {
+            check_angle = degrees(acos(dot(normalize(target_vec), normalize(check_vec))));
+             
+            if (check_angle < angle_limit) {
+                mark = 1;
+                break;
+            }
+        }
+    }
+
+    if (!mark && i > @ptnum) {
+        push(@firstpass, i);
+        addprim(0, "polyline", @ptnum, i);
+    }
+}
